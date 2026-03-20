@@ -172,8 +172,45 @@
     30%{transform:translateY(-6px);opacity:1;}
   }
 
+  /* Suggestion toggle */
+  .suggestions-wrapper { flex-shrink: 0; }
+  .suggestions-toggle {
+    width: 100%; display: flex; align-items: center;
+    padding: 10px 0 6px; background: none; border: none;
+    cursor: pointer; text-align: left;
+  }
+  .toggle-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 7px 14px;
+    font-size: 11px; font-family: 'DM Mono', monospace;
+    color: var(--text-dim); letter-spacing: 0.06em;
+    text-transform: uppercase; transition: all 0.2s;
+  }
+  .suggestions-toggle:hover .toggle-pill {
+    border-color: var(--accent); color: var(--text); background: var(--paul-bg);
+  }
+  .toggle-arrow {
+    display: inline-block; font-style: normal;
+    transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  }
+  .suggestions-wrapper.open .toggle-arrow { transform: rotate(180deg); }
+  .toggle-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent); color: white; border-radius: 10px;
+    font-size: 10px; font-weight: 600; min-width: 18px; height: 18px; padding: 0 5px;
+  }
+
   /* Suggestion chips */
-  .suggestions { padding:16px 0 8px;display:flex;flex-wrap:wrap;gap:8px; }
+  .suggestions { display: none; flex-wrap: wrap; gap: 8px; padding: 8px 0 12px; }
+  .suggestions-wrapper.open .suggestions {
+    display: flex; animation: suggestIn 0.25s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes suggestIn {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .dummy-suggestions-placeholder { display:none; }
 
   .chip {
     padding:9px 16px;background:var(--surface2);
@@ -254,6 +291,57 @@
   @media(max-width:600px){
     .bubble{font-size:13px;padding:12px 14px;}
     .chip{font-size:11px;padding:8px 13px;}
+  }
+
+  /* ---- CONTACT BAR ---- */
+  .contact-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    margin-bottom: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    gap: 10px;
+    animation: msgIn 0.3s ease both;
+  }
+  .contact-bar-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .contact-bar-label em {
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .contact-bar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .contact-bar-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(108,99,255,0.35);
   }
 
   /* ---- LANGUAGE OVERLAY ---- */
@@ -512,7 +600,21 @@
     </div>
   </div>
 
-  <div id="suggestions" class="suggestions"></div>
+  <div class="contact-bar" id="contactBar">
+    <span class="contact-bar-label" id="contactBarLabel">Interesse geweckt? <em>Paul direkt kontaktieren</em></span>
+    <button class="contact-bar-btn" onclick="openModal()" id="contactBarBtn">&#x2709;&#xFE0F; Kontakt</button>
+  </div>
+
+  <div class="suggestions-wrapper" id="suggestionsWrapper">
+    <button class="suggestions-toggle" onclick="toggleSuggestions()">
+      <span class="toggle-pill">
+        <span id="toggleLabel">Fragen ansehen</span>
+        <span class="toggle-count" id="toggleCount">8</span>
+        <i class="toggle-arrow">&#x25BE;</i>
+      </span>
+    </button>
+    <div id="suggestions" class="suggestions"></div>
+  </div>
 
   <div class="input-area">
     <input class="input-field" id="inputField" type="text" placeholder="Oder eigene Frage stellen..." />
@@ -544,6 +646,10 @@ var TR = {
     modalSub: "Paul direkt erreichen",
     labelEmail: "E-Mail",
     labelPhone: "Telefon",
+    toggleLabel: "Fragen ansehen",
+    contactBarLabel: "Interesse geweckt? ",
+    contactBarEm: "Paul direkt kontaktieren",
+    contactBarBtn: "\u2709\uFE0F Kontakt",
     keywords: {"skill":"skills","python":"skills","tool":"skills","sprach":"skills","zertif":"skills","erfahrung":"experience","bank":"experience","job":"experience","arbeit":"experience","studi":"education","uni":"education","schul":"education","abschluss":"education","ai":"ai","chatbot":"ai","maschine":"ai","einzigartig":"unique","besonder":"unique","unterschied":"unique","person":"personality","mensch":"personality","hobby":"personality","interesse":"personality","anstell":"hire","einstell":"hire","empfehlung":"hire","wer":"intro","hallo":"intro","hi":"intro"},
     qa: [
       {id:"intro",question:"\uD83D\uDC4B Wer ist Paul?",answer:"Hallo! Ich bin Pauls KI-Assistent \u2013 lass mich kurz vorstellen:\n\nPaul ist ein aufgeschlossener Wirtschaftswissenschaftler mit echtem Tech-Instinkt. Er bringt fast drei Jahre Berufserfahrung in der Bankenwelt mit \u2013 IT Controlling, License Management und IT Product Management bei zwei der renommiertesten deutschen Finanzinstitute: der DZ BANK AG und der KfW.\n\nDerzeit absolviert er seinen MSc in Business Administration & Digital Business an der Copenhagen Business School (erwartet 2028), nach einem soliden BSc (Note: 3.3) an der Goethe-Universit\u00E4t Frankfurt.\n\nKurz gesagt: Ein Profil, das strategisches Business-Denken mit konkreter Tech-Umsetzung verbindet."},
@@ -575,6 +681,10 @@ var TR = {
     modalSub: "Reach out to Paul directly",
     labelEmail: "Email",
     labelPhone: "Phone",
+    toggleLabel: "Browse questions",
+    contactBarLabel: "Seen enough? ",
+    contactBarEm: "Contact Paul directly",
+    contactBarBtn: "\u2709\uFE0F Contact",
     keywords: {"skill":"skills","python":"skills","tool":"skills","language":"skills","certif":"skills","experience":"experience","bank":"experience","job":"experience","work":"experience","career":"experience","stud":"education","uni":"education","school":"education","degree":"education","ai":"ai","artificial":"ai","chatbot":"ai","machine":"ai","data":"ai","unique":"unique","special":"unique","different":"unique","person":"personality","human":"personality","hobby":"personality","interest":"personality","hire":"hire","employ":"hire","recommend":"hire","should":"hire","who":"intro","hello":"intro","hi":"intro"},
     qa: [
       {id:"intro",question:"\uD83D\uDC4B Who is Paul?",answer:"Hello! I'm Paul's AI assistant \u2013 let me introduce him:\n\nPaul is an open-minded economist with a genuine instinct for technology. He brings nearly three years of professional experience in banking \u2013 IT Controlling, License Management, and IT Product Management at two of Germany's most prestigious financial institutions: DZ BANK AG and KfW.\n\nHe is currently pursuing his MSc in Business Administration & Digital Business at Copenhagen Business School (expected 2028), following a solid BSc (GPA: 3.3) from Goethe University Frankfurt.\n\nIn short: a profile that bridges strategic business thinking with concrete tech execution."},
@@ -606,6 +716,10 @@ var TR = {
     modalSub: "N\u00E5 ud til Paul direkte",
     labelEmail: "E-mail",
     labelPhone: "Telefon",
+    toggleLabel: "Se spørgsmål",
+    contactBarLabel: "Set nok? ",
+    contactBarEm: "Kontakt Paul direkte",
+    contactBarBtn: "\u2709\uFE0F Kontakt",
     keywords: {"sp\u00F8rgsm\u00E5l":"skills","kompetence":"skills","python":"skills","certif":"skills","sprog":"skills","erfaring":"experience","bank":"experience","job":"experience","arbejd":"experience","studer":"education","uni":"education","uddann":"education","skole":"education","ai":"ai","chatbot":"ai","maskin":"ai","data":"ai","unik":"unique","s\u00E6rlig":"unique","skiller":"unique","person":"personality","menneske":"personality","hobby":"personality","interesse":"personality","ans\u00E6t":"hire","anbefal":"hire","hyre":"hire","hvem":"intro","hej":"intro","hi":"intro"},
     qa: [
       {id:"intro",question:"\uD83D\uDC4B Hvem er Paul?",answer:"Hej! Jeg er Pauls AI-assistent \u2013 lad mig pr\u00E6sentere ham:\n\nPaul er en \u00E5ben \u00F8konom med en \u00E6gte fornemmelse for teknologi. Han har n\u00E6sten tre \u00E5rs erhvervserfaring inden for bankverden \u2013 IT Controlling, License Management og IT Product Management hos to af Tysklands mest anerkendte finansielle institutioner: DZ BANK AG og KfW.\n\nI \u00F8jeblikket l\u00E6ser han til MSc i Business Administration & Digital Business p\u00E5 Copenhagen Business School (forventet 2028), efter en solid BSc (karakter: 3.3) fra Goethe Universit\u00E4t Frankfurt.\n\nKort sagt: en profil, der forbinder strategisk forretningstankning med konkret teknisk udf\u00F8relse."},
@@ -652,6 +766,12 @@ function selectLang(code) {
   document.getElementById('label-email').textContent = t.labelEmail;
   document.getElementById('label-phone').textContent = t.labelPhone;
   updateModalTooltips();
+  var tl = document.getElementById('toggleLabel');
+  if (tl && t.toggleLabel) tl.textContent = t.toggleLabel;
+  var cbl = document.getElementById('contactBarLabel');
+  if (cbl && t.contactBarLabel) cbl.innerHTML = t.contactBarLabel + '<em>' + t.contactBarEm + '</em>';
+  var cbb = document.getElementById('contactBarBtn');
+  if (cbb && t.contactBarBtn) cbb.innerHTML = t.contactBarBtn;
 
   if (isSwitch) {
     asked = {};
@@ -778,6 +898,10 @@ function updateProgress() {
   document.getElementById('progressLabel').textContent = t.progressLabel(askedCount, total);
 }
 
+function toggleSuggestions() {
+  document.getElementById('suggestionsWrapper').classList.toggle('open');
+}
+
 function renderSuggestions() {
   var container = document.getElementById('suggestions');
   container.innerHTML = '';
@@ -785,19 +909,23 @@ function renderSuggestions() {
   for (var key in asked) { if (key !== 'hire') nonHireAsked++; }
   var hireUnlocked = nonHireAsked >= TOTAL_NON_HIRE;
 
+  var count = 0;
   for (var i = 0; i < qa.length; i++) {
     var item = qa[i];
     if (asked[item.id]) continue;
+    count++;
     var chip = document.createElement('button');
     var isFinal = item.id === 'hire';
     var isLocked = isFinal && !hireUnlocked;
     chip.className = 'chip' + (isFinal ? ' final' : '') + (isLocked ? ' locked' : '');
     chip.textContent = item.question;
     if (!isLocked) {
-      (function(it){ chip.onclick = function(){ handleChip(it); }; })(item);
+      (function(it){ chip.onclick = function(){ document.getElementById('suggestionsWrapper').classList.remove('open'); handleChip(it); }; })(item);
     }
     container.appendChild(chip);
   }
+  var badge = document.getElementById('toggleCount');
+  if (badge) badge.textContent = count;
 }
 
 // ---- INTERACTION ------------------------------------------------------------
@@ -810,7 +938,6 @@ function handleChip(item) {
     if (item.answer === '__FINAL__') { renderFinalCard(); return; }
     renderMessage(item.answer, 'paul').then(function() {
       renderSuggestions();
-      document.getElementById('suggestions').style.display = 'flex';
     });
   });
 }
@@ -859,14 +986,26 @@ function init() {
   updateProgress();
   renderMessage(t.welcomeMsg, 'paul').then(function() {
     renderSuggestions();
-    document.getElementById('suggestions').style.display = 'flex';
+    documentgetElementById('progress-section').style.display = 'none';
   });
 }
 
+// ---- EVENT LISTENERS --------------------------------------------------------
 document.getElementById('sendBtn').onclick = handleUserInput;
 document.getElementById('inputField').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') handleUserInput();
 });
+document.getElementById('contact-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Expose to global scope (fixes "not defined" errors from inline onclick)
+window.selectLang     = selectLang;
+window.openLangOverlay= openLangOverlay;
+window.openModal      = openModal;
+window.closeModal     = closeModal;
+window.copyText       = copyText;
+window.toggleSuggestions = toggleSuggestions;
 </script>
 </body>
 </html>
